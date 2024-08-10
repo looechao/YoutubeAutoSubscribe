@@ -1,0 +1,28 @@
+{
+    "manifest_version": 3,
+    "name": "YouTube Auto Subscribe",
+    "version": "1.0",
+    "description": "Automatically subscribes to YouTube channels from a backup CSV file",
+    "permissions": [
+      "activeTab",
+      "tabs"
+    ],
+    "icons": {
+      "128": "icons/icon128.png"
+    },
+    "host_permissions": [
+      "https://www.youtube.com/*"
+    ],
+    "background": {
+      "service_worker": "background.js" 
+    },
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://www.youtube.com/*"],
+        "js": ["content.js"]
+      }
+    ]
+  }

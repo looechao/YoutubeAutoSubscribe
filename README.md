@@ -1,6 +1,6 @@
 ![logo](./assets/readme.png)
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE.md) ![](https://img.shields.io/badge/JavaScript-yellow?style=flat-square&logo=JavaScript&logoColor=white) ![](https://img.shields.io/badge/ChromeWebStore-red?style=flat-square&logo=ChromeWebStore&logoColor=white)  
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE) ![](https://img.shields.io/badge/JavaScript-yellow?style=flat-square&logo=JavaScript&logoColor=white) ![](https://img.shields.io/badge/ChromeWebStore-red?style=flat-square&logo=ChromeWebStore&logoColor=white)  
 
  ![](https://img.shields.io/badge/Youtube-pink?style=flat-square&logo=YouTube&logoColor=white) 
 

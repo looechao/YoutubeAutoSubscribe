@@ -1,8 +1,8 @@
 ![logo](./assets/readme.png)
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE) ![](https://img.shields.io/badge/JavaScript-yellow?style=flat-square&logo=JavaScript&logoColor=white) ![](https://img.shields.io/badge/ChromeWebStore-red?style=flat-square&logo=ChromeWebStore&logoColor=white)  
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE) [![JavaScript](https://img.shields.io/badge/JavaScript-yellow?style=flat-square&logo=JavaScript&logoColor=white)](https://www.javascript.com/) ![ChromeWebStore](https://img.shields.io/badge/ChromeWebStore-red?style=flat-square&logo=ChromeWebStore&logoColor=white)
 
- ![](https://img.shields.io/badge/Youtube-pink?style=flat-square&logo=YouTube&logoColor=white) 
+[![](https://img.shields.io/badge/Youtube-pink?style=flat-square&logo=YouTube&logoColor=white)](https://youtube.com)
 
 This tool allows you to automatically subscribe to YouTube channels from a backup CSV file
 
@@ -50,4 +50,4 @@ Follow these steps to transfer your YouTube subscriptions:
 ## Troubleshooting
 
 - If you encounter any issues, check the console for error messages and ensure that the CSV file is formatted correctly.
-- For any further assistance, feel free to reach out via [Issue Tracker](https://chat.lmsys.org/URL_TO_ISSUE_TRACKER).
+- For any further assistance, feel free to reach out via [Issue](https://github.com/looechao/YoutubeAutoSubscribe/issues).

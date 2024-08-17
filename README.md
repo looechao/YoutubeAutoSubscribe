@@ -45,6 +45,7 @@ Follow these steps to transfer your YouTube subscriptions:
 
 - Ensure that you are logged into your new YouTube account before running the script.
 - The script may take some time depending on the number of subscriptions being processed.
+- **Make sure the YouTube webpage is set to English or Chinese.**
 
 ## Troubleshooting
 

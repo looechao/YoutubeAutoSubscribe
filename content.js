@@ -263,9 +263,17 @@ async function addVideoToPlaylist(videoId, playlistName) {
             const allOptions = playlistsContainer.querySelectorAll('yt-list-item-view-model[role="listitem"]');
             let targetOption = null;
 
+            // Google Takeout 会把文件名里的非法字符（/ \ : * ? " < > |）替换成下划线，
+            // 而 playlistName 是从 CSV 文件名推导出来的，所以真实标题里的 "/" 等在这里会变成 "_"。
+            // 先按真实标题精确匹配，匹配不上时再按同样的归一化规则回退匹配。
+            const sanitize = (s) => s.replace(/[/\\:*?"<>|]/g, '_');
+            const wantedSanitized = sanitize(playlistName);
+
             for (const option of allOptions) {
                 const titleElement = option.querySelector('[class*="Title"]');
-                if (titleElement && titleElement.textContent.trim() === playlistName) {
+                if (!titleElement) continue;
+                const title = titleElement.textContent.trim();
+                if (title === playlistName || sanitize(title) === wantedSanitized) {
                     targetOption = option;
                     break;
                 }

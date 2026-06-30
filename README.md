@@ -20,6 +20,9 @@ Use Google Takeout to export your YouTube data from your old account:
 - Subscriptions list
 - Playlists data
 
+Not sure what the exported files should look like? See [`examples/`](./examples)
+for sample subscription and playlist CSV files and a description of the format.
+
 ### 2. Transfer Data
 
 ![choose](./assets/chooseFile.png)
@@ -48,7 +51,7 @@ Use Google Takeout to export your YouTube data from your old account:
 
 If you're experiencing problems, please try these steps:
 
-1. Verify your CSV files:
+1. Verify your CSV files (compare against [`examples/`](./examples)):
    - For subscriptions: Use the original channels list from Google Takeout
    - For playlists: Ensure filenames end with `-videos.csv`
 

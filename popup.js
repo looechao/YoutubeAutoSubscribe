@@ -62,6 +62,8 @@ async function handlePlaylistFolder(event) {
     errorDiv.style.display = 'none';
 
     if (!files || files.length === 0) {
+        errorDiv.textContent = 'Choose a folder containing playlist files ending with -videos.csv';
+        errorDiv.style.display = 'block';
         return;
     }
 
@@ -84,11 +86,14 @@ async function handlePlaylistFolder(event) {
             if (chrome.runtime.lastError) {
                 errorDiv.textContent = 'Error: ' + chrome.runtime.lastError.message;
                 errorDiv.style.display = 'block';
-            } else if (response.success) {
+            } else if (response?.received) {
+                messageDiv.textContent = 'Processing playlists...';
+                messageDiv.className = 'message';
+            } else if (response?.success) {
                 messageDiv.textContent = 'All playlists processed successfully';
                 messageDiv.className = 'message success';
             } else {
-                errorDiv.textContent = 'Process error: ' + response.error;
+                errorDiv.textContent = 'Process error: ' + (response?.error || 'Unknown error');
                 errorDiv.style.display = 'block';
             }
         });

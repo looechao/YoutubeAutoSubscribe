@@ -292,7 +292,7 @@ async function addVideoToPlaylist(videoId, playlistName) {
                 }
             } else {
                 console.log(`播放列表 ${playlistName} 不存在，创建新的...`);
-                const createNewButton = await waitForElement('button[aria-label^="新建播放列表"], button[aria-label^="New playlist"]');
+                const createNewButton = await waitForElement('button[aria-label^="新建播放列表"], button[aria-label^="New playlist"]', 5000, playlistsContainer);
                 createNewButton.click();
                 await new Promise(r => setTimeout(r, 1000));
 
@@ -301,7 +301,12 @@ async function addVideoToPlaylist(videoId, playlistName) {
                 nameInput.dispatchEvent(new Event('input', { bubbles: true }));
                 await new Promise(r => setTimeout(r, 500));
 
-                const createButton = await waitForElement('.yt-spec-button-shape-next--filled[aria-label^="创建"], .yt-spec-button-shape-next--filled[aria-label^="Create"]');
+                const createButton = await waitForElement([
+                    '.ytSpecButtonShapeNextFilled[aria-label^="创建"]',
+                    '.ytSpecButtonShapeNextFilled[aria-label^="Create"]',
+                    '.yt-spec-button-shape-next--filled[aria-label^="创建"]',
+                    '.yt-spec-button-shape-next--filled[aria-label^="Create"]'
+                ].join(', '));
                 createButton.click();
             }
         } catch (error) {

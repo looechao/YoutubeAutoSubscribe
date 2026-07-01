@@ -237,10 +237,12 @@ async function addVideoToPlaylist(videoId, playlistName) {
 
 
         // 等待播放列表菜单出现
+        // 注意：YouTube 已将"保存到播放列表"弹窗迁移到新的 yt-sheet-view-model 组件，
+        // 旧的 #playlists 容器已不存在，这是 playlist 迁移失效的根本原因。
         let playlistsContainer;
         for (let retryCount = 0; retryCount < 3; retryCount++) {
             try {
-                playlistsContainer = await waitForElement('#playlists');
+                playlistsContainer = await waitForElement('yt-sheet-view-model');
                 break;
             } catch (error) {
                 console.log(`第 ${retryCount + 1} 次尝试获取播放列表容器失败，重试中...`);
@@ -256,31 +258,41 @@ async function addVideoToPlaylist(videoId, playlistName) {
             await new Promise(r => setTimeout(r, 1000));
 
             // 查找目标播放列表
-            const allOptions = playlistsContainer.querySelectorAll('ytd-playlist-add-to-option-renderer');
+            // 新版弹窗中每个播放列表是一个 yt-list-item-view-model[role="listitem"]，
+            // 标题在 [class*="Title"] 元素里，勾选状态由内部 button 的 aria-pressed 表示。
+            const allOptions = playlistsContainer.querySelectorAll('yt-list-item-view-model[role="listitem"]');
             let targetOption = null;
 
+            // Google Takeout 会把文件名里的非法字符（/ \ : * ? " < > |）替换成下划线，
+            // 而 playlistName 是从 CSV 文件名推导出来的，所以真实标题里的 "/" 等在这里会变成 "_"。
+            // 先按真实标题精确匹配，匹配不上时再按同样的归一化规则回退匹配。
+            const sanitize = (s) => s.replace(/[/\\:*?"<>|]/g, '_');
+            const wantedSanitized = sanitize(playlistName);
+
             for (const option of allOptions) {
-                const titleElement = option.querySelector('yt-formatted-string[id="label"]');
-                if (titleElement && titleElement.getAttribute('title') === playlistName) {
+                const titleElement = option.querySelector('[class*="Title"]');
+                if (!titleElement) continue;
+                const title = titleElement.textContent.trim();
+                if (title === playlistName || sanitize(title) === wantedSanitized) {
                     targetOption = option;
                     break;
                 }
             }
 
             if (targetOption) {
-                const checkbox = targetOption.querySelector('tp-yt-paper-checkbox');
-                const isChecked = checkbox.getAttribute('aria-checked') === 'true';
+                const toggleButton = targetOption.querySelector('button') || targetOption;
+                const isChecked = toggleButton.getAttribute('aria-pressed') === 'true';
 
                 if (!isChecked) {
                     console.log(`将视频添加到播放列表 ${playlistName}`);
-                    checkbox.click();
+                    toggleButton.click();
                     await new Promise(r => setTimeout(r, 500));
                 } else {
                     console.log(`视频已在播放列表 ${playlistName} 中，跳过`);
                 }
             } else {
                 console.log(`播放列表 ${playlistName} 不存在，创建新的...`);
-                const createNewButton = await waitForElement('button[aria-label^="新建播放列表"], button[aria-label^="New playlist"]');
+                const createNewButton = await waitForElement('button[aria-label^="新建播放列表"], button[aria-label^="New playlist"]', 5000, playlistsContainer);
                 createNewButton.click();
                 await new Promise(r => setTimeout(r, 1000));
 
@@ -289,7 +301,12 @@ async function addVideoToPlaylist(videoId, playlistName) {
                 nameInput.dispatchEvent(new Event('input', { bubbles: true }));
                 await new Promise(r => setTimeout(r, 500));
 
-                const createButton = await waitForElement('.yt-spec-button-shape-next--filled[aria-label^="创建"], .yt-spec-button-shape-next--filled[aria-label^="Create"]');
+                const createButton = await waitForElement([
+                    '.ytSpecButtonShapeNextFilled[aria-label^="创建"]',
+                    '.ytSpecButtonShapeNextFilled[aria-label^="Create"]',
+                    '.yt-spec-button-shape-next--filled[aria-label^="创建"]',
+                    '.yt-spec-button-shape-next--filled[aria-label^="Create"]'
+                ].join(', '));
                 createButton.click();
             }
         } catch (error) {

@@ -29,11 +29,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true;
     }
     if (request.action === "processAllPlaylists") {
+        // Return immediately so the popup is not tied to a long MV3 message port.
+        sendResponse({ received: true });
+
         processAllPlaylists(request.playlists).then(() => {
-            sendResponse({ success: true });
+            chrome.runtime.sendMessage({
+                action: "playlistsCompleted"
+            }).catch(() => {
+                console.log('Popup may be closed, cannot send playlist completion message');
+            });
         }).catch(error => {
             console.error('Error processing playlists:', error);
-            sendResponse({ success: false, error: error.message });
+            chrome.runtime.sendMessage({
+                action: "playlistsError",
+                error: error.message
+            }).catch(() => {
+                console.log('Popup may be closed, cannot send playlist error message');
+            });
         });
         return true;
     }

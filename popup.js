@@ -1,4 +1,4 @@
-// 修改 updateFileInputLabel 函数
+// Updates the label of a custom file input
 function updateFileInputLabel(input, defaultText) {
     const wrapper = input.parentElement;
     const label = wrapper.querySelector('.custom-file-input');
@@ -14,17 +14,17 @@ function updateFileInputLabel(input, defaultText) {
 }
 
 
-// 处理文件上传
+// Handles CSV file upload
 async function handleFile(event) {
     const file = event.target.files[0];
     console.log('File selected:', file?.name);
 
     try {
-        // 1. 读取 CSV 文件
+        // 1. Read the CSV file
         const csvData = await readFileAsync(file);
         console.log('CSV data loaded, length:', csvData.length);
 
-        // 2. 直接发送数据到 background script 处理
+        // 2. Send the data to the background script for processing
         console.log('Sending data to background script...');
         chrome.runtime.sendMessage({
             action: "processCSV",
@@ -38,7 +38,7 @@ async function handleFile(event) {
                 errorDiv.style.display = 'block';
             } else {
                 const messageDiv = document.getElementById('message');
-                messageDiv.textContent = 'Processing channels...';
+                messageDiv.textContent = 'Processing subscriptions...';
                 messageDiv.className = 'message';
             }
         });
@@ -51,7 +51,7 @@ async function handleFile(event) {
     }
 }
 
-// 处理播放列表文件夹
+// Handles the playlist folder selection
 async function handlePlaylistFolder(event) {
     const files = Array.from(event.target.files || []).filter(file => file.name.endsWith('-videos.csv'));
     const messageDiv = document.getElementById('playlistMessage');
@@ -98,13 +98,13 @@ async function handlePlaylistFolder(event) {
             }
         });
     } catch (error) {
-        console.error('处理播放列表失败:', error);
+        console.error('Failed to process playlists:', error);
         errorDiv.textContent = `Processing failed: ${error.message}`;
         errorDiv.style.display = 'block';
     }
 }
 
-// 辅助函数：将 FileReader 包装为 Promise
+// Helper: wrap FileReader in a Promise
 function readFileAsync(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -114,7 +114,7 @@ function readFileAsync(file) {
     });
 }
 
-// CSV 解析函数
+// CSV parsing function
 function CSVToArray(strData, strDelimiter = ",") {
     const objPattern = new RegExp(
         ("(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
@@ -137,14 +137,14 @@ function CSVToArray(strData, strDelimiter = ",") {
     return arrData;
 }
 
-// 初始化
+// Initialization
 let keepAliveInterval;
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('popup.js 初始化');
+    console.log('popup.js initialized');
     const fileInput = document.getElementById('fileInput');
     const playlistFolderInput = document.getElementById('playlistFolderInput');
 
-    // 初始化进度条
+    // Reset the progress bar
     const progressContainer = document.querySelector('.channels .progress');
     if (progressContainer) {
         progressContainer.style.display = 'none';
@@ -155,10 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (fileInput) {
-        console.log('找到文件输入框，添加事件监听器');
-        // 移除旧的事件监听器
+        console.log('File input found, adding event listener');
+        // Remove the old event listener
         fileInput.removeEventListener('change', handleFile);
-        // 添加新的事件监听器
+        // Add the new event listener
         fileInput.addEventListener('change', handleFile);
         updateFileInputLabel(fileInput, 'Choose CSV file');
     }
@@ -168,20 +168,20 @@ document.addEventListener('DOMContentLoaded', () => {
         playlistFolderInput.addEventListener('change', handlePlaylistFolder);
     }
 
-    // 保持 popup 活跃
+    // Keep the popup alive
     keepAliveInterval = setInterval(() => {
         chrome.runtime.sendMessage({ action: "keepAlive" });
     }, 25000);
 });
 
-// 在 popup 关闭时清除定时器
+// Clear the timer when the popup closes
 window.addEventListener('unload', () => {
     if (keepAliveInterval) {
         clearInterval(keepAliveInterval);
     }
 });
 
-// 监听来自后台脚本的消息
+// Listen for messages from the background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (request.action === "processComplete") {
@@ -202,9 +202,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (progressBar && progressContainer) {
             progressContainer.style.display = 'block';
             progressBar.style.width = `${request.progress}%`;
-            console.log(`更新进度: ${request.progress}%`); // 添加日志
+            console.log(`Updating progress: ${request.progress}%`); // add logging
         } else {
-            console.log('进度条元素未找到'); // 添加调试信息
+            console.log('Progress bar element not found'); // add debugging info
+        }
+
+        // Update the text progress indicator, e.g. "Processing subscriptions (2/54)"
+        if (request.type === "channels" && request.total > 0) {
+            const messageDiv = document.getElementById('message');
+            if (messageDiv) {
+                messageDiv.textContent = `Processing subscriptions (${request.current}/${request.total})`;
+            }
         }
     } else if (request.action === "playlistsCompleted") {
         // Show completion message

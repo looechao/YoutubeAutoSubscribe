@@ -5,7 +5,7 @@ function updateFileInputLabel(input, defaultText) {
 
     input.addEventListener('change', (event) => {
         if (input.hasAttribute('webkitdirectory')) {
-            const files = Array.from(event.target.files || []).filter(file => file.name.endsWith('-videos.csv'));
+            const files = Array.from(event.target.files || []).filter(file => file.name.toLowerCase().endsWith('.csv'));
             label.textContent = files.length > 0 ? `${files.length} playlist files selected` : defaultText;
         } else {
             label.textContent = event.target.files[0]?.name || defaultText;
@@ -53,7 +53,7 @@ async function handleFile(event) {
 
 // Handles the playlist folder selection
 async function handlePlaylistFolder(event) {
-    const files = Array.from(event.target.files || []).filter(file => file.name.endsWith('-videos.csv'));
+    const files = Array.from(event.target.files || []).filter(file => file.name.toLowerCase().endsWith('.csv'));
     const messageDiv = document.getElementById('playlistMessage');
     const errorDiv = document.getElementById('playlistError');
 
@@ -62,7 +62,7 @@ async function handlePlaylistFolder(event) {
     errorDiv.style.display = 'none';
 
     if (!files || files.length === 0) {
-        errorDiv.textContent = 'Choose a folder containing playlist files ending with -videos.csv';
+        errorDiv.textContent = 'Choose a folder containing playlist CSV files';
         errorDiv.style.display = 'block';
         return;
     }
@@ -71,7 +71,10 @@ async function handlePlaylistFolder(event) {
         const allPlaylists = [];
         for (const file of files) {
             const csvData = await readFileAsync(file);
-            const playlistName = file.name.replace('-videos.csv', '');
+            // YouTube now exports playlists as plain .csv files (no -videos suffix).
+            // Derive the playlist name from the filename, keeping backward
+            // compatibility with the old <name>-videos.csv format.
+            const playlistName = file.name.replace(/\.csv$/i, '').replace(/-videos$/i, '');
             const videos = CSVToArray(csvData).slice(1);
             allPlaylists.push({
                 name: playlistName,

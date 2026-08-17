@@ -8,8 +8,8 @@ IDs below are public, well-known channels/videos — no personal data.
 examples/
 ├── subscriptions.csv          # feed this to the "Subscriptions" section
 └── playlists/                 # pick this folder in the "Playlists" section
-    ├── My Favorites-videos.csv
-    └── Coding Tutorials-videos.csv
+    ├── My Favorites.csv
+    └── Coding Tutorials.csv
 ```
 
 ## subscriptions.csv
@@ -30,8 +30,9 @@ UC_x5XG1OV2P6uZZ5FSM9Ttw,http://www.youtube.com/channel/UC_x5XG1OV2P6uZZ5FSM9Ttw
 Comes from Google Takeout at `YouTube and YouTube Music/playlists/`. In the
 extension, choose the **folder**, not individual files.
 
-- One file per playlist, named `<Playlist title>-videos.csv`. The playlist
-  name is taken from the filename with `-videos.csv` removed.
+- One file per playlist, a plain `.csv` export. The playlist name is taken
+  from the filename with the `.csv` extension removed (a legacy
+  `<name>-videos.csv` filename is still handled: `-videos` is stripped too).
 - A header row is required (the extension skips the first row).
 - Only **column 1 (Video ID)** is used; the timestamp column is ignored.
 
@@ -42,7 +43,7 @@ dQw4w9WgXcQ,2024-01-15T10:30:00+00:00
 
 > **Note on `/` in playlist names:** Takeout replaces filesystem-illegal
 > characters (`/ \ : * ? " < > |`) with `_` in the filename. A playlist
-> titled `CS 194/294-196` is exported as `CS 194_294-196-videos.csv`. The
+> titled `CS 194/294-196` is exported as `CS 194_294-196.csv`. The
 > extension normalizes this when matching, so the videos still land in the
 > right playlist.
 

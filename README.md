@@ -37,7 +37,7 @@ for sample subscription and playlist CSV files and a description of the format.
 #### For Playlists:
 
 1. Click "Choose folder" in the Playlists section
-2. Select the folder containing your playlist backup files (ending with `-videos.csv`)
+2. Select the folder containing your playlist backup CSV files
 3. Drink a coffee while the extension creates playlists and adds videos
 4. You'll see a completion notification when done
 
@@ -53,7 +53,7 @@ If you're experiencing problems, please try these steps:
 
 1. Verify your CSV files (compare against [`examples/`](./examples)):
    - For subscriptions: Use the original channels list from Google Takeout
-   - For playlists: Ensure filenames end with `-videos.csv`
+   - For playlists: Use the playlist CSV files exported by Google Takeout
 
 2. If issues persist:
    - Open an [issue](https://github.com/looechao/YoutubeAutoSubscribe/issues) on Github

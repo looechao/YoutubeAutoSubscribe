@@ -1,0 +1,68 @@
+name: Publish to Chrome Web Store
+
+# Triggered only by version tags pushed by someone with write access.
+# Secrets are never available to fork-triggered workflows.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches manifest version
+        id: meta
+        run: |
+          MANIFEST_VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' manifest.json | head -1)
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$MANIFEST_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag v$TAG_VERSION does not match manifest.json version $MANIFEST_VERSION"
+            exit 1
+          fi
+          echo "version=$MANIFEST_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Package extension
+        run: scripts/package.sh dist/extension.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: extension
+          path: dist/extension.zip
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    # Protected environment: configure required reviewers in repo settings
+    # so a release still needs a manual approval click.
+    environment: chrome-web-store
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: extension
+          path: dist
+
+      - name: Upload and submit for review
+        env:
+          EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+        run: |
+          npx --yes chrome-webstore-upload-cli@3 upload \
+            --source dist/extension.zip \
+            --auto-publish
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/extension.zip
+          generate_release_notes: true

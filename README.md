@@ -71,3 +71,21 @@ Awesome! 🎉
 If you find this extension helpful, I'd be grateful for your star! ⭐️ 
 
 Thank you for your support! 🙏
+
+## Releasing
+
+Releases are published to the Chrome Web Store automatically by GitHub Actions
+(see [`.github/workflows/publish.yml`](./.github/workflows/publish.yml)):
+
+1. Bump `version` in `manifest.json` and merge to `main`.
+2. Push a matching tag, for example `git tag v1.0.5 && git push origin v1.0.5`.
+3. Approve the `chrome-web-store` environment deployment in the Actions tab.
+4. The workflow zips the runtime files, uploads the package for Google review,
+   and attaches the zip to a GitHub Release.
+
+Required repository secrets: `CWS_EXTENSION_ID`, `CWS_CLIENT_ID`,
+`CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN`. See
+[Using the Chrome Web Store API](https://developer.chrome.com/docs/webstore/using-api)
+for how to obtain them.
+
+To build the zip locally without publishing, run `scripts/package.sh`.

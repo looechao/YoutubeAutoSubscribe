@@ -258,9 +258,9 @@ async function addVideoToPlaylist(videoId, playlistName) {
             await new Promise(r => setTimeout(r, 1000));
 
             // Find the target playlist
-            // In the new dialog each playlist is a yt-list-item-view-model[role="listitem"],
+            // In the new dialog each playlist is a yt-list-item-view-model (role="presentation"),
             // the title is in a [class*="Title"] element, and the checked state is the inner button's aria-pressed.
-            const allOptions = playlistsContainer.querySelectorAll('yt-list-item-view-model[role="listitem"]');
+            const allOptions = playlistsContainer.querySelectorAll('yt-list-item-view-model');
             let targetOption = null;
 
             // Google Takeout replaces illegal filename characters (/ \ : * ? " < > |) with underscores,

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Backup Complete</title>
     <style>
         body {
@@ -63,6 +64,26 @@
             font-size: 14px;
             opacity: 0.8;
         }
+
+        .support-link {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: #b52b28;
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .support-link:hover {
+            background: #8f211f;
+        }
+
+        .support-link:focus-visible {
+            outline: 3px solid #222;
+            outline-offset: 3px;
+        }
     </style>
 </head>
 <body>
@@ -76,6 +97,7 @@
             <h1>Migration Complete!</h1>
             <p>All selected data has been successfully migrated to your new account.</p>
             <p class="sub-text">You can safely close this tab now.</p>
+            <a class="support-link" href="https://ko-fi.com/looechao" target="_blank" rel="noopener noreferrer">Buy me a coffee on Ko-fi</a>
         </div>
     </div>
 </body>
